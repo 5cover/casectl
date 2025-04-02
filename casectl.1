@@ -1,0 +1,77 @@
+.TH CASECTL 1 "April 2025" "casectl 1.0" "User Commands"
+.SH NAME
+casectl \- encode/decode ALLCAPS source files with case-preserving escapes
+.SH SYNOPSIS
+.B casectl
+[\-\-lower|\-\-upper]
+.SH DESCRIPTION
+.B casectl
+is a stream-based encoder and decoder for ALLCAPS source files, designed to allow uppercase programming with lowercase repositories.
+
+It reads from standard input and writes to standard output. Warnings (such as invalid escapes or unterminated spans) are sent to standard error.
+
+.SH DEFAULT BEHAVIOR
+If no arguments are provided, casectl defaults to encode mode (--lower) when input is provided via standard input. If invoked interactively without piped input, it prints a usage summary to standard error.
+
+.SH OPTIONS
+.TP
+.B \-l, \-\-lower
+Encode mode: transforms an ALLCAPS source file into lowercase form, using escape rules to preserve intended casing.
+
+.TP
+.B \-u, \-\-upper
+Decode mode: transforms a previously encoded lowercase file back to its ALLCAPS form.
+A canonical representation is used : lone uppercase letters are escaped by an underscore, while spans of multiple uppercase letters are escaped as literal spans.
+
+.TP
+.B \-h, \-\-help
+Show help message and exit.
+
+.TP
+.B \-\-version
+Show program version and exit.
+
+.SH ESCAPING RULES
+.TP
+.B _X
+Preserve a single uppercase letter X (e.g., GET_ELEMENT_BY_I_D → getElementByID)
+
+.TP
+.B __
+Represents a literal underscore (_)
+
+.TP
+.B ¤...¤
+Literal span: characters inside are preserved as-is. Use ¤¤ to escape a literal ¤.
+
+.SH EXIT STATUS
+.TP
+0
+Success
+
+.TP
+1
+Syntax error (e.g. unmatched escape sequence)
+
+.SH EXAMPLES
+.TP
+Encode ALLCAPS to lowercase:
+.RS
+.nf
+cat MYFILE.C | casectl --lower > myfile.c
+.fi
+.RE
+
+.TP
+Decode lowercase back to ALLCAPS:
+.RS
+.nf
+cat myfile.c | casectl --upper > MYFILE.C
+.fi
+.RE
+
+.SH AUTHOR
+5cover
+
+.SH SEE ALSO
+git(1), tr(1)
