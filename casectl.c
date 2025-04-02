@@ -46,7 +46,7 @@ typedef enum {
 
 static bool check_transform_arg_once(transform_t transform) {
     if (transform == TransformNone) return true;
-    fprintf(stderr, PROG ": expected either --lower or --uppper, once");
+    fprintf(stderr, PROG ": expected either --lower or --upper, once\n");
     return false;
 }
 
@@ -172,7 +172,7 @@ void lowercase(FILE *in, FILE *out) {
     }
 }
 
-static void putwc_escape(FILE *in, FILE *out, wchar_t c) {
+static void put_upper_escaped(FILE *in, FILE *out, wchar_t c) {
     if (c == EN || c == E1) {
         wint_t next = (ungetwc(getwc(in), in));
         if (!iswupper(next)) putwc(c, out);
@@ -180,7 +180,7 @@ static void putwc_escape(FILE *in, FILE *out, wchar_t c) {
     putwc(towupper(c), out);
 }
 
-static void putwc_literal_span_char(wchar_t c, FILE *out) {
+static void put_literal_escaped(wchar_t c, FILE *out) {
     if (c == EN) putwc(EN, out);
     putwc(c, out);
 }
@@ -192,18 +192,18 @@ void uppercase(FILE *in, FILE *out) {
             wint_t next = getwc(in);
             if (iswupper(next)) {
                 putwc(EN, out);
-                putwc_literal_span_char(c, out);
+                put_literal_escaped(c, out);
                 do {
-                    putwc_literal_span_char(next, out);
+                    put_literal_escaped(next, out);
                 } while ((next = getwc(in)) != WEOF && (next == E1 || next == EN || iswupper(next)));
                 putwc(EN, out);
             } else {
                 putwc(E1, out);
-                putwc_escape(in, out, c);
+                put_upper_escaped(in, out, c);
             }
-            if (next != WEOF) putwc_escape(in, out, next);
+            if (next != WEOF) put_upper_escaped(in, out, next);
         } else {
-            putwc_escape(in, out, c);
+            put_upper_escaped(in, out, c);
         }
     }
 }

@@ -6,18 +6,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")" || return 1
 pass=0
 fail=0
 
-test_case_stderr() {
-    test_case_full "$1" "$2" "$3" "$2" "$4"
-}
-
-test_case() {
-    test_case_full "$1" "$2" "$3" "$2" ''
-}
-
-test_case_canonical() {
-    test_case_full "$1" "$2" "$3" "$4" ''
-}
-
 stderr_file=$(mktemp)
 
 call_casectl() {
@@ -56,6 +44,19 @@ call_casectl() {
     fi
 
     return $ok
+}
+
+
+test_case() {
+    test_case_full "$1" "$2" "$3" "$2" ''
+}
+
+test_case_canonical() {
+    test_case_full "$1" "$2" "$3" "$4" ''
+}
+
+test_case_stderr() {
+    test_case_full "$1" "$2" "$3" "$2" "$4"
 }
 
 test_case_full() {
@@ -107,9 +108,10 @@ test_case "Literal span ¤...¤" \
     "¤GET_ELEMENT_BY_ID¤" \
     "GET_ELEMENT_BY_ID"
 
-test_case "Mixed escaping" \
+test_case_canonical "Mixed escaping" \
     "FETCH_¤URL_WITH_PARAM¤_AND_LOG" \
-    "fetch_URL_WITH_PARAM_andLog"
+    "fetch_URL_WITH_PARAM_andLog" \
+    "FETCH_¤URL_WITH_PARAM_¤AND_LOG"
 
 test_case "Literal underscore inside ¤" \
     "¤THIS_IS_LITERAL¤" \
@@ -119,7 +121,7 @@ test_case "Escaped ¤ inside span" \
     "¤HELLO¤¤WORLD¤" \
     "HELLO¤WORLD"
 
-test_case "Multiple _X in a row" \
+test_case_canonical "Multiple _X in a row" \
     "GET_A_B_C_D" \
     "getABCD" \
     "GET¤ABCD¤"
@@ -132,9 +134,10 @@ test_case "Empty literal span" \
     "¤¤" \
     "¤"
 
-test_case_stderr "Lone ¤ (unterminated span -> warning)" \
+test_case_full "Lone ¤ (unterminated span -> warning)" \
     "START_¤UNFINISHED" \
     "start_UNFINISHED" \
+    "START_¤UNFINISHED¤" \
     'casectl: Found an unterminated literal span starting form the last ¤ in input. Did you forget too escape it?'
 
 rm "$stderr_file"
