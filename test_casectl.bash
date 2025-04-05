@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -u
-cd "$(dirname "${bashSource[0]}")" || return 1
+cd "$(dirname "${BASH_SOURCE[0]}")" || return 1
 
 pass=0
 fail=0
@@ -81,74 +81,74 @@ test_case_full() {
     ((++pass))
 }
 
-echo "== running casectl tests =="
+echo "== Running casectl tests =="
 
-test_case "plain allcaps" \
-    "helloWorld" \
-    "helloworld"
+test_case "Plain ALLCAPS" \
+    "HELLO_WORLD" \
+    "helloWorld"
 
-test_case_canonical "camelcase with ID" \
+test_case_canonical "CamelCase with _I_D" \
+    "GET_ELEMENT_BY_I_D" \
     "getElementByID" \
-    "getelementbyid" \
+    "GET_ELEMENT_BY¤ID¤"
+
+test_case "CamelCase with ¤ID¤" \
+    "GET_ELEMENT_BY¤ID¤" \
     "getElementByID"
 
-test_case "camelcase with ID" \
-    "getElementByID" \
-    "getelementbyid"
-
-test_case_canonical "camelcase with _" \
-    "GET_ELEMENT_BY_Id" \
+test_case_canonical "CamelCase with _¤" \
+    "GET_ELEMENT_BY_¤ID¤" \
     "getElementBy_ID" \
-    "GET_ELEMENT_BY_id"
+    "GET_ELEMENT_BY¤_ID¤"
 
 test_case "Escaped underscore __" \
     "SET__CONFIG" \
     "set_config"
 
-test_case "Literal span ..." \
-    "GetElementById" \
+test_case "Literal span ¤...¤" \
+    "¤GET_ELEMENT_BY_ID¤" \
     "GET_ELEMENT_BY_ID"
 
 test_case_canonical "Mixed escaping" \
-    "FETCH_UrlWithParam__AND_LOG" \
+    "FETCH_¤URL_WITH_PARAM¤__AND_LOG" \
     "fetch_URL_WITH_PARAM_andLog" \
-    "FETCH_urlWithParam_AND_LOG"
+    "FETCH¤_URL_WITH_PARAM_¤AND_LOG"
 
-test_case "Literal underscore inside " \
-    "THIS_IS_LITERAL" \
-    "thisIsLiteral"
+test_case "Literal underscore inside ¤" \
+    "¤THIS_IS_LITERAL¤" \
+    "THIS_IS_LITERAL"
 
-test_case "escaped  inside span" \
-    "Hello¤world" \
-    "HELLOWorld"
+test_case "Escaped ¤ inside span" \
+    "¤HELLO¤¤WORLD¤" \
+    "HELLO¤WORLD"
 
-test_case_canonical "multiple X in a row" \
+test_case_canonical "Multiple _X in a row" \
+    "GET_A_B_C_D" \
     "getABCD" \
-    "getabcd" \
-    "getABCD"
+    "GET¤ABCD¤"
 
-test_case "escaped _ outside literal" \
-    "some_thing" \
+test_case "Escaped _ outside literal" \
+    "SOME__THING" \
     "some_thing"
 
-test_case "empty literal span" \
-    "¤" \
-    ""
+test_case "Empty literal span" \
+    "¤¤" \
+    "¤"
 
-test_case_full "Lone  (unterminated span -> warning)" \
+test_case_full "Lone ¤ (unterminated span -> warning)" \
+    "START_¤UNFINISHED" \
     "start_UNFINISHED" \
-    "start_UNFINISHED" \
-    "START_unfinished" \
-    'casectl: Found an unterminated literal span starting from the last  in input. did you forget to escape it?'
+    "START¤_UNFINISHED¤" \
+    'casectl: Found an unterminated literal span starting from the last ¤ in input. Did you forget to escape it?'
 
 test_case_canonical "weof" \
     "_" \
     "_" \
-    "_"
+    "__"
 
 
 rm "$stderr_file"
 
 echo
-echo "== results: $pass passed, $fail failed =="
+echo "== Results: $pass passed, $fail failed =="
 [[ $fail -eq 0 ]] && exit 0 || exit 1

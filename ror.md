@@ -1,33 +1,33 @@
-# ror (read, output, repeat) diagram
+# ROR (Read, Output, Repeat) Diagram
 
-## todo
+## Todo
 
-- ror coffee mug
-- ror logo (lion head clipart split into 8x8 pixel chunks on a grid with a 2px margin)
+- ROR coffee mug
+- ROR logo (lion head clipart split into 8x8 pixel chunks on a grid with a 2px margin)
 
-a mix between a railroad diagram and a state diagram. ror diagrams are precise enough so one can manually process input by reading them and following edges and nodes.
+A mix between a railroad diagram and a state diagram. ROR Diagrams are precise enough so one can manually process input by reading them and following edges and nodes.
 
-ror diagrams are used to unambiguously program a working parser that covers edge cases properly.
+ROR Diagrams are used to unambiguously program a working parser that covers edge cases properly.
 
-written as a flowchart.
+Written as a flowchart.
 
-## how to read
+## How to read
 
-from the starting point, follow the arrow to the node matching the next character, or * as a last resort if nothing else matches.
+From the starting point, follow the arrow to the node matching the next character, or * as a last resort if nothing else matches.
 
-if you traverse circled nodes without arrows on the way, output those characters.
+If you traverse circled nodes without arrows on the way, output those characters.
 
-once you reach the node connected with an arrow, read the character it contains. if the node is circled, output it as-is, too.
+Once you reach the node connected with an arrow, read the character it contains. If the node is circled, output it as-is, too.
 
-repeat until eof is outputted.
+Repeat until EOF is outputted.
 
-## character node labels for casectl
+## Character node labels for CASECTL
 
-symbol|character represented
-a|uppercase letter
+Symbol|Character represented
+A|uppercase letter
 a|lowercase letter
-_|e1 (escape 1), aka underscore
-|EN (escape N), aka currency sign
+_|E1 (escape 1), aka underscore
+¤|EN (escape N), aka currency sign
 EOF|End of file, ends processing when outputted. Must be the last "character" read.
 ^|Last read character. Cannot be used before at least one character has been read.
 *|Literally anything else (default case). Should always be present if all other node labels aren't present.
@@ -87,7 +87,7 @@ config:
 ---
 flowchart TB
 0 --- 1(("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"))
-1 --> 2["A"] & 5["_"] & 4(("\*")) & 7[""]
+1 --> 2["A"] & 5["_"] & 4(("\*")) & 7["¤"]
 2 --- 3(("a"))
 3 --- 1
 4 --- 1
@@ -95,14 +95,14 @@ flowchart TB
 5 --> 4
 6 --> 7
 7 --- 9(("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"))
-7 --> 8((""))
+7 --> 8(("¤"))
 8 --- 1
 9 --- 13["!"]
 9 --> 10(("\*"))
-9 --> 11[""]
+9 --> 11["¤"]
 10 --- 9
 11 --- 1
-11 --> 12((""))
+11 --> 12(("¤"))
 12 --- 9
 13 --> 14(("EOF"))
 15["Unterminated literal span"] -.-> 13
@@ -129,15 +129,15 @@ flowchart TB
 0 --- 1((&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;))
 1 --> 2["a"]
 1 --> 3.5((\*))
-1 --> 4(())
+1 --> 4((¤))
 1 --> 6["_"]
-1 --> 7["a"]
-2 --> 3((a))
+1 --> 7["A"]
+2 --> 3((A))
 3 --- 1
 3.5 --- 1
-4 --- 5(())
+4 --- 5((¤))
 5 --- 1
-6 --- 10(())
+6 --- 10((¤))
 6 --- 8((_))
 7 --- 10
 7 --- 8
@@ -145,16 +145,16 @@ flowchart TB
 9 --- 1
 10 --- 11((^))
 11 --> 12((_))
-11 --> 13(())
+11 --> 13((¤))
 11 --> 14((A))
 12 --- 16((&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;))
-13 --- 15(())
+13 --- 15((¤))
 14 --- 16
 15 --- 16
-16 --- 20(())
-16 --> 17(())
+16 --- 20((¤))
+16 --> 17((¤))
 16 --> 19((\*))
-17 --- 18(())
+17 --- 18((¤))
 18 --- 16
 19 --- 16
 20 --> 2

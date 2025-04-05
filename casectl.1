@@ -1,48 +1,48 @@
-.th casectl 1 "april 2025" "casectl 1.0" "user commands"
-.sh name
-casectl \- encode/decode allcaps source files with case-preserving escapes
-.sh synopsis
-.b casectl
+.TH CASECTL 1 "April 2025" "casectl 1.0" "User Commands"
+.SH NAME
+casectl \- encode/decode ALLCAPS source files with case-preserving escapes
+.SH SYNOPSIS
+.B casectl
 [\-\-lower|\-\-upper]
-.sh description
-.b casectl
-is a stream-based encoder and decoder for allcaps source files, designed to allow uppercase programming with lowercase repositories.
+.SH DESCRIPTION
+.B casectl
+is a stream-based encoder and decoder for ALLCAPS source files, designed to allow uppercase programming with lowercase repositories.
 
-it reads from standard input and writes to standard output. warnings (such as invalid escapes or unterminated spans) are sent to standard error.
+It reads from standard input and writes to standard output. Warnings (such as invalid escapes or unterminated spans) are sent to standard error.
 
-.sh default behavior
-if no arguments are provided, casectl defaults to encode mode (--lower) when input is provided via standard input. if invoked interactively without piped input, it prints a usage summary to standard error.
+.SH DEFAULT BEHAVIOR
+If no arguments are provided, casectl defaults to encode mode (--lower) when input is provided via standard input. If invoked interactively without piped input, it prints a usage summary to standard error.
 
-.sh options
-.tp
-.b \-l, \-\-lower
-encode mode: transforms an allcaps source file into lowercase form, using escape rules to preserve intended casing.
+.SH OPTIONS
+.TP
+.B \-l, \-\-lower
+Encode mode: transforms an ALLCAPS source file into lowercase form, using escape rules to preserve intended casing.
 
-.tp
-.b \-u, \-\-upper
-decode mode: transforms a previously encoded lowercase file back to its allcaps form.
-a canonical representation is used : lone uppercase letters are escaped by an underscore, while spans of multiple uppercase letters are escaped as literal spans.
+.TP
+.B \-u, \-\-upper
+Decode mode: transforms a previously encoded lowercase file back to its ALLCAPS form.
+A canonical representation is used : lone uppercase letters are escaped by an underscore, while spans of multiple uppercase letters are escaped as literal spans.
 
-.tp
-.b \-h, \-\-help
-show help message and exit.
+.TP
+.B \-h, \-\-help
+Show help message and exit.
 
-.tp
-.b \-\-version
-show program version and exit.
+.TP
+.B \-\-version
+Show program version and exit.
 
-.sh escaping rules
-.tp
-.b X
-preserve a single uppercase letter x (e.g., getElementByID → getelementbyid)
+.SH ESCAPING RULES
+.TP
+.B _X
+Preserve a single uppercase letter X (e.g., GET_ELEMENT_BY_I_D → getElementByID)
 
-.tp
-.b _
-represents a literal underscore (_)
+.TP
+.B __
+Represents a literal underscore (_)
 
-.tp
-.b ...
-literal span: characters inside are preserved as-is. use ¤ to escape a literal .
+.TP
+.B ¤...¤
+Literal span: characters inside are preserved as-is. Use ¤¤ to escape a literal ¤.
 
 .SH EXIT STATUS
 .TP

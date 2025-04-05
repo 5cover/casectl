@@ -1,11 +1,11 @@
-# casectl format
+# Casectl format
 
 glyph|description
 -|-
-a|uppercase letter
+A|uppercase letter
 *|any other character
--|e1 (single escape)
-|EN (literal span delimiter)
+-|E1 (single escape)
+¤|EN (literal span delimiter)
 
 ```mermaid
 flowchart

@@ -1,18 +1,18 @@
 #pragma once
 
-/// @brief read then input char (wint_t)
-#define read() getwc(in)
-/// @brief emit a character to output
-#define emit(c)                                        \
+/// @brief Read THEN input char (wint_t)
+#define READ() getwc(in)
+/// @brief Emit a character to output
+#define EMIT(C)                                        \
     do {                                               \
-        assert(c != weof && "attempted to emit weof"); \
-        putwc(c, out);                                 \
+        assert(C != WEOF && "Attempted to emit WEOF"); \
+        putwc(C, out);                                 \
     } while (0)
-/// @brief run another rule on current input.
-#define incl(label) goto label
-/// @brief read next character, and run anothe rule.
-#define then(label)    \
+/// @brief Run another rule on current input.
+#define INCL(LABEL) goto LABEL
+/// @brief Read next character, and run anothe rule.
+#define THEN(LABEL)    \
     do {               \
         c = getwc(in); \
-        incl(label);   \
+        INCL(LABEL);   \
     } while (0)

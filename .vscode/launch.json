@@ -4,46 +4,46 @@
     "name": "(gdb) casectl -l",
     "type": "cppdbg",
     "request": "launch",
-    "program": "${workspacefolder}/casectl",
+    "program": "${workspaceFolder}/casectl",
     "args": ["-l"],
-    "stopatentry": false,
-    "cwd": "${workspacefolder}",
+    "stopAtEntry": false,
+    "cwd": "${workspaceFolder}",
     "environment": [],
-    "externalconsole": true,
-    "mimode": "gdb",
-    "setupcommands": [
+    "externalConsole": true,
+    "MIMode": "gdb",
+    "setupCommands": [
         {
-            "description": "activer l'impression en mode pretty pour gdb",
+            "description": "Activer l'impression en mode Pretty pour gdb",
             "text": "-enable-pretty-printing",
-            "ignorefailures": true
+            "ignoreFailures": true
         },
         {
-            "description": "définir la version désassemblage sur intel",
+            "description": "Définir la version désassemblage sur Intel",
             "text": "-gdb-set disassembly-flavor intel",
-            "ignorefailures": true
+            "ignoreFailures": true
         }
     ]
   },{
     "name": "(gdb) casectl -u",
     "type": "cppdbg",
     "request": "launch",
-    "program": "${workspacefolder}/casectl",
+    "program": "${workspaceFolder}/casectl",
     "args": ["-u"],
-    "stopatentry": false,
-    "cwd": "${workspacefolder}",
+    "stopAtEntry": false,
+    "cwd": "${workspaceFolder}",
     "environment": [],
-    "externalconsole": true,
-    "mimode": "gdb",
-    "setupcommands": [
+    "externalConsole": true,
+    "MIMode": "gdb",
+    "setupCommands": [
         {
-            "description": "activer l'impression en mode pretty pour gdb",
+            "description": "Activer l'impression en mode Pretty pour gdb",
             "text": "-enable-pretty-printing",
-            "ignorefailures": true
+            "ignoreFailures": true
         },
         {
-            "description": "définir la version désassemblage sur intel",
+            "description": "Définir la version désassemblage sur Intel",
             "text": "-gdb-set disassembly-flavor intel",
-            "ignorefailures": true
+            "ignoreFailures": true
         }
     ]
   }

@@ -1,4 +1,4 @@
-// gcc -wall -wextra casectl.c -o casectl
+// gcc -Wall -Wextra casectl.c -o casectl
 
 #include <assert.h>
 #include <getopt.h>
@@ -12,11 +12,11 @@
 
 #include "ror.h"
 
-/// @brief one-char escape
-#define e1 l'_'
+/// @brief One-char escape
+#define E1 L'_'
 
-/// @brief n-char escape
-#define en l''
+/// @brief N-char escape
+#define EN L'¤'
 
 /// @brief Program name
 #define PROG "casectl"
