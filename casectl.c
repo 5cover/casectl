@@ -1,4 +1,4 @@
-// gcc -Wall -Wextra casectl.c -o casectl
+// gcc -wall -wextra casectl.c -o casectl
 
 #include <getopt.h>
 #include <locale.h>
@@ -9,11 +9,11 @@
 #include <wchar.h>
 #include <wctype.h>
 
-/// @brief One-char escape
-#define E1 L'_'
+/// @brief one-char escape
+#define e1 l'_'
 
-/// @brief N-char escape
-#define EN L'¤'
+/// @brief n-char escape
+#define en l''
 
 /// @brief Program name
 #define PROG "casectl"
@@ -38,6 +38,7 @@ Defaults to --lower if input is piped. See `man casectl` for details."
 static void lowercase(FILE *in, FILE *out);
 static void uppercase(FILE *in, FILE *out);
 
+static wint_t peekwc(FILE *in);
 typedef enum {
     TransformNone,
     TransformUpper,
@@ -125,21 +126,21 @@ int main(int argc, char **argv) {
     }
 }
 
-// After starting `¤'
-static bool literal_span(FILE *in, FILE *out) {
+// After starting `'
+static bool literal_span(file *in, file *out) {
     wint_t c = getwc(in);
-    if (c != WEOF) putwc(c, out);
-    return c != EN;
+    if (c != weof) putwc(c, out);
+    return c != en;
 }
 
-void lowercase(FILE *in, FILE *out) {
+void lowercase(file *in, file *out) {
     wint_t c;
     bool in_escape = false;
-    
-    while ((c = getwc(in)) != WEOF) {
+
+    while ((c = getwc(in)) != weof) {
         switch (c) {
         // single escape
-        case E1: {
+        case e1: {
             if (in_escape) {
                 putwc(c, out);
                 break;
@@ -148,17 +149,17 @@ void lowercase(FILE *in, FILE *out) {
             if (iswupper(next)) {
                 putwc(next, out);
             } else {
-                putwc(E1, out);
-                if (next == EN) {
+                putwc(e1, out);
+                if (next == en) {
                     in_escape ^= literal_span(in, out);
-                } else if (next != E1 && next != WEOF) {
+                } else if (next != e1 && next != weof) {
                     putwc(next, out);
                 }
             }
             break;
         }
         // literal span
-        case EN: {
+        case en: {
             in_escape ^= literal_span(in, out);
             break;
         }
@@ -168,42 +169,54 @@ void lowercase(FILE *in, FILE *out) {
     }
 
     if (in_escape) {
-        fprintf(stderr, PROG ": Found an unterminated literal span starting form the last %lc in input. Did you forget too escape it?\n", EN);
+        fprintf(stderr, prog ": found an unterminated literal span starting form the last %lc in input. did you forget to escape it?\n", en);
     }
 }
 
-static void put_upper_escaped(FILE *in, FILE *out, wchar_t c) {
-    if (c == EN || c == E1) {
-        wint_t next = (ungetwc(getwc(in), in));
-        if (!iswupper(next)) putwc(c, out);
+static void put_upper_escaped(file *in, file *out, wchar_t c) {
+    if (c == e1) {
+        wint_t next = peekwc(in);
+        if (!iswupper(next)) putwc(e1, out);
+    } else if (c == en) {
+        putwc(en, out);
     }
     putwc(towupper(c), out);
 }
 
-static void put_literal_escaped(wchar_t c, FILE *out) {
-    if (c == EN) putwc(EN, out);
+static void put_literal_escaped(wchar_t c, file *out) {
+    if (c == en) putwc(en, out);
     putwc(c, out);
 }
 
-void uppercase(FILE *in, FILE *out) {
+void uppercase(file *in, file *out) {
     wint_t c;
-    while ((c = getwc(in)) != WEOF) {
+    while ((c = getwc(in)) != weof) {
         if (iswupper(c)) {
             wint_t next = getwc(in);
             if (iswupper(next)) {
-                putwc(EN, out);
+                putwc(en, out);
                 put_literal_escaped(c, out);
                 do {
                     put_literal_escaped(next, out);
-                } while ((next = getwc(in)) != WEOF && (next == E1 || next == EN || iswupper(next)));
-                putwc(EN, out);
+                } while ((next = getwc(in)) != weof && (next == e1 || next == en || iswupper(next)));
+                putwc(en, out);
             } else {
-                putwc(E1, out);
+                putwc(e1, out);
                 put_upper_escaped(in, out, c);
             }
-            if (next != WEOF) put_upper_escaped(in, out, next);
+            if (next != weof) put_upper_escaped(in, out, next);
         } else {
             put_upper_escaped(in, out, c);
         }
     }
+}
+
+wint_t peekwc(file *in) {
+    wint_t c = getwc(in);
+    if (c != weof) {
+        if (ungetwc(c, in) == weof) {
+            fprintf(stderr, prog ": error: peekwc: failed to ungetwc()\n");
+        }
+    }
+    return c;
 }
