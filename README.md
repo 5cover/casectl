@@ -43,7 +43,7 @@ SET__CONFIG -> set_config
 - Example:
 
 ```text
-FETCH_¤URL_WITH_PARAM¤_AND_LOG -> fetchUrlWithParamAndLog
+FETCH¤_URL_WITH_PARAM_¤AND__LOG -> fetch_URL_WITH_PARAM_and_log
 ```
 
 - You can escape a literal `¤` inside a span with `¤¤` (like SQL-style quote doubling):
@@ -62,11 +62,11 @@ FETCH_¤URL_WITH_PARAM¤_AND_LOG -> fetchUrlWithParamAndLog
 
 ### 3. Summary of Escapes
 
-| Input           | Output           | Meaning                              |
-|----------------|------------------|--------------------------------------|
-| `_x`            | `X`              | Preserve a single capital            |
+| Input            | Output           | Meaning                              |
+|-------------------|-------------------|---------------------------------------|
+| `_x`             | `X`              | Preserve a single capital            |
 | `__`            | `_`              | Literal underscore                   |
-| `¤...¤`         | `...`            | Preserve span exactly                |
+| `¤...¤`         | `...`             | Preserve span exactly                |
 | `¤¤` inside span| `¤`              | Literal currency sign inside span    |
 
 ## roadmap
@@ -74,4 +74,3 @@ FETCH_¤URL_WITH_PARAM¤_AND_LOG -> fetchUrlWithParamAndLog
 - file arguments
 - `-i`, `--in-place` option
 - `-f`, `--format` option: canonicalize (equivalent to lowercase + uppercase)
-- cleanup text teansform logic (should we use the ungetc pattern more?)
