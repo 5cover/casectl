@@ -1,5 +1,6 @@
 // gcc -wall -wextra casectl.c -o casectl
 
+#include <assert.h>
 #include <getopt.h>
 #include <locale.h>
 #include <stdbool.h>
@@ -8,6 +9,8 @@
 #include <unistd.h>
 #include <wchar.h>
 #include <wctype.h>
+
+#include "ror.h"
 
 /// @brief one-char escape
 #define e1 l'_'
@@ -35,10 +38,9 @@ Defaults to --lower if input is piped. See `man casectl` for details."
 /// @brief Versionstring
 #define VERSION "1.0.0"
 
-static void lowercase(FILE *in, FILE *out);
-static void uppercase(FILE *in, FILE *out);
+static int lowercase(FILE *in, FILE *out);
+static int uppercase(FILE *in, FILE *out);
 
-static wint_t peekwc(FILE *in);
 typedef enum {
     TransformNone,
     TransformUpper,
@@ -54,8 +56,7 @@ static bool check_transform_arg_once(transform_t transform) {
 int main(int argc, char **argv) {
     setlocale(LC_CTYPE, "");
 
-    transform_t transform
-        = TransformNone;
+    transform_t transform = TransformNone;
 
     // Arguments
     {
@@ -117,106 +118,115 @@ int main(int argc, char **argv) {
             break;
         }
         [[fallthrough]];
-    case TransformLower:
-        lowercase(stdin, stdout);
-        break;
-    case TransformUpper:
-        uppercase(stdin, stdout);
-        break;
+    case TransformLower: return lowercase(stdin, stdout);
+    case TransformUpper: return uppercase(stdin, stdout);
     }
 }
 
-// After starting `'
-static bool literal_span(file *in, file *out) {
-    wint_t c = getwc(in);
-    if (c != weof) putwc(c, out);
-    return c != en;
-}
+int lowercase(FILE *in, FILE *out) {
+    wint_t c = READ();
 
-void lowercase(file *in, file *out) {
-    wint_t c;
-    bool in_escape = false;
-
-    while ((c = getwc(in)) != weof) {
+START:
+    switch (c) {
+    case E1:
+        c = READ();
         switch (c) {
-        // single escape
-        case e1: {
-            if (in_escape) {
-                putwc(c, out);
-                break;
-            }
-            wint_t next = getwc(in);
-            if (iswupper(next)) {
-                putwc(next, out);
-            } else {
-                putwc(e1, out);
-                if (next == en) {
-                    in_escape ^= literal_span(in, out);
-                } else if (next != e1 && next != weof) {
-                    putwc(next, out);
-                }
-            }
-            break;
-        }
-        // literal span
-        case en: {
-            in_escape ^= literal_span(in, out);
-            break;
-        }
+        case EN:
+            EMIT(E1);
+            THEN(SPAN_START);
+        case WEOF:
+            EMIT(E1);
+            return 0;
         default:
-            putwc(in_escape ? c : towlower(c), out);
+            EMIT(c);
+            THEN(START);
         }
+    case EN: THEN(SPAN_START);
+    // EOF must be handled explicitly when the default case isn't an inclusion, to avoid
+    case WEOF: return 0;
+    default:
+        EMIT(towlower(c));
+        THEN(START);
     }
 
-    if (in_escape) {
-        fprintf(stderr, prog ": found an unterminated literal span starting form the last %lc in input. did you forget to escape it?\n", en);
+SPAN_START:
+    switch (c) {
+    case EN:
+        EMIT(EN);
+        THEN(START);
+    default: INCL(SPAN_BODY);
     }
-}
 
-static void put_upper_escaped(file *in, file *out, wchar_t c) {
-    if (c == e1) {
-        wint_t next = peekwc(in);
-        if (!iswupper(next)) putwc(e1, out);
-    } else if (c == en) {
-        putwc(en, out);
-    }
-    putwc(towupper(c), out);
-}
-
-static void put_literal_escaped(wchar_t c, file *out) {
-    if (c == en) putwc(en, out);
-    putwc(c, out);
-}
-
-void uppercase(file *in, file *out) {
-    wint_t c;
-    while ((c = getwc(in)) != weof) {
-        if (iswupper(c)) {
-            wint_t next = getwc(in);
-            if (iswupper(next)) {
-                putwc(en, out);
-                put_literal_escaped(c, out);
-                do {
-                    put_literal_escaped(next, out);
-                } while ((next = getwc(in)) != weof && (next == e1 || next == en || iswupper(next)));
-                putwc(en, out);
-            } else {
-                putwc(e1, out);
-                put_upper_escaped(in, out, c);
-            }
-            if (next != weof) put_upper_escaped(in, out, next);
-        } else {
-            put_upper_escaped(in, out, c);
+SPAN_BODY:
+    switch (c) {
+    case EN:
+        c = READ();
+        switch (c) {
+        case EN:
+            EMIT(EN);
+            THEN(SPAN_BODY);
+        default: INCL(START);
         }
+    case WEOF:
+        fprintf(stderr, PROG ": Found an unterminated literal span starting from the last %lc in input. Did you forget to escape it?\n", EN);
+        return 1;
+    default:
+        EMIT(c);
+        THEN(SPAN_BODY);
     }
 }
 
-wint_t peekwc(file *in) {
-    wint_t c = getwc(in);
-    if (c != weof) {
-        if (ungetwc(c, in) == weof) {
-            fprintf(stderr, prog ": error: peekwc: failed to ungetwc()\n");
+int uppercase(FILE *in, FILE *out) {
+    wint_t c = READ();
+
+START:
+    switch (c) {
+    case EN:
+        EMIT(EN);
+        EMIT(EN);
+        THEN(START);
+    case WEOF: return 0;
+    default:
+        // if character does not require escaping
+        if (c != E1 && !iswupper(c)) INCL(EMIT_UPPER);
+
+        wint_t next = READ();
+
+        // If the next char would also require _-escaping, start a literal span.
+        if (next == E1 || next == EN || iswupper(next)) {
+            EMIT(EN);
+            EMIT(c);
+            c = next;
+            INCL(SPAN_BODY);
         }
+
+        // otherwise, just _-escape it normally.
+        EMIT(E1);
+        EMIT(c);
+        if (next == WEOF) return 0;
+        EMIT(towupper(next));
+        THEN(START);
     }
-    return c;
+
+EMIT_UPPER:
+    EMIT(towupper(c));
+    THEN(START);
+
+SPAN_BODY:
+    switch (c) {
+    case EN:
+        EMIT(EN);
+        EMIT(EN);
+        THEN(SPAN_BODY);
+    case WEOF:
+        EMIT(EN);
+        return 0;
+    default:
+        if (iswlower(c)) {
+            EMIT(EN);
+            INCL(EMIT_UPPER);
+        }
+        EMIT(c);
+        THEN(SPAN_BODY);
+    }
 }

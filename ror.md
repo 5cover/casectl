@@ -1,5 +1,10 @@
 # ror (read, output, repeat) diagram
 
+## todo
+
+- ror coffee mug
+- ror logo (lion head clipart split into 8x8 pixel chunks on a grid with a 2px margin)
+
 a mix between a railroad diagram and a state diagram. ror diagrams are precise enough so one can manually process input by reading them and following edges and nodes.
 
 ror diagrams are used to unambiguously program a working parser that covers edge cases properly.
@@ -128,7 +133,6 @@ flowchart TB
 1 --> 6["_"]
 1 --> 7["a"]
 2 --> 3((a))
-20 --> 2
 3 --- 1
 3.5 --- 1
 4 --- 5(())
@@ -153,6 +157,8 @@ flowchart TB
 17 --- 18(())
 18 --- 16
 19 --- 16
+20 --> 2
+20 --> 21((EOF))
 
 0@{shape: f-circ}
 2@{shape: text}

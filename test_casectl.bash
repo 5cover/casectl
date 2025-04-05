@@ -18,7 +18,7 @@ call_casectl() {
     : >"$stderr_file"
 
     local got_stdout got_stderr
-    got_stdout=$(./casectl "$arg" <<<"$stdin" 2>"$stderr_file")
+    got_stdout=$(echo -n "$stdin" | ./casectl "$arg" 2>"$stderr_file")
     got_stderr=$(cat "$stderr_file")
 
     local ok=0
@@ -96,9 +96,10 @@ test_case "camelcase with ID" \
     "getElementByID" \
     "getelementbyid"
 
-test_case "camelcase with _" \
+test_case_canonical "camelcase with _" \
     "GET_ELEMENT_BY_Id" \
-    "getElementBy_ID"
+    "getElementBy_ID" \
+    "GET_ELEMENT_BY_id"
 
 test_case "Escaped underscore __" \
     "SET__CONFIG" \
@@ -109,9 +110,9 @@ test_case "Literal span ..." \
     "GET_ELEMENT_BY_ID"
 
 test_case_canonical "Mixed escaping" \
-    "FETCH_UrlWithParam_AND_LOG" \
+    "FETCH_UrlWithParam__AND_LOG" \
     "fetch_URL_WITH_PARAM_andLog" \
-    "FETCH_UrlWithParam_AND_LOG"
+    "FETCH_urlWithParam_AND_LOG"
 
 test_case "Literal underscore inside " \
     "THIS_IS_LITERAL" \
@@ -137,8 +138,14 @@ test_case "empty literal span" \
 test_case_full "Lone  (unterminated span -> warning)" \
     "start_UNFINISHED" \
     "start_UNFINISHED" \
-    "START_Unfinished" \
-    'casectl: Found an unterminated literal span starting form the last  in input. did you forget to escape it?'
+    "START_unfinished" \
+    'casectl: Found an unterminated literal span starting from the last  in input. did you forget to escape it?'
+
+test_case_canonical "weof" \
+    "_" \
+    "_" \
+    "_"
+
 
 rm "$stderr_file"
 

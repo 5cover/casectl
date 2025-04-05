@@ -1,0 +1,51 @@
+{
+  "configurations": [
+  {
+    "name": "(gdb) casectl -l",
+    "type": "cppdbg",
+    "request": "launch",
+    "program": "${workspacefolder}/casectl",
+    "args": ["-l"],
+    "stopatentry": false,
+    "cwd": "${workspacefolder}",
+    "environment": [],
+    "externalconsole": true,
+    "mimode": "gdb",
+    "setupcommands": [
+        {
+            "description": "activer l'impression en mode pretty pour gdb",
+            "text": "-enable-pretty-printing",
+            "ignorefailures": true
+        },
+        {
+            "description": "définir la version désassemblage sur intel",
+            "text": "-gdb-set disassembly-flavor intel",
+            "ignorefailures": true
+        }
+    ]
+  },{
+    "name": "(gdb) casectl -u",
+    "type": "cppdbg",
+    "request": "launch",
+    "program": "${workspacefolder}/casectl",
+    "args": ["-u"],
+    "stopatentry": false,
+    "cwd": "${workspacefolder}",
+    "environment": [],
+    "externalconsole": true,
+    "mimode": "gdb",
+    "setupcommands": [
+        {
+            "description": "activer l'impression en mode pretty pour gdb",
+            "text": "-enable-pretty-printing",
+            "ignorefailures": true
+        },
+        {
+            "description": "définir la version désassemblage sur intel",
+            "text": "-gdb-set disassembly-flavor intel",
+            "ignorefailures": true
+        }
+    ]
+  }
+  ]
+}
