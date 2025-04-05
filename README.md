@@ -1,5 +1,8 @@
 # casectl
 
+> [!note]
+> This document is maintained in casectl uppercase format. A git filter is used to decode it into the version you are currently seeing.
+
 casectl is a program that changes the case of text.
 
 Reads from standard input, writes to standard output.
