@@ -21,7 +21,7 @@ Argument|
 - The entire file is **lowercased**.
 - You can escape or preserve capitalization using `_` or `¤`.
 
-### 1. `_X` &rarr; preserve `X` as uppercase
+### 1. `_x` &rarr; preserve `X` as uppercase
 
 - Underscore followed by **a single uppercase letter** is preserved verbatim.
 - Example:  
@@ -64,7 +64,14 @@ FETCH_¤URL_WITH_PARAM¤_AND_LOG -> fetchUrlWithParamAndLog
 
 | Input           | Output           | Meaning                              |
 |----------------|------------------|--------------------------------------|
-| `_X`            | `X`              | Preserve a single capital            |
+| `_x`            | `X`              | Preserve a single capital            |
 | `__`            | `_`              | Literal underscore                   |
 | `¤...¤`         | `...`            | Preserve span exactly                |
 | `¤¤` inside span| `¤`              | Literal currency sign inside span    |
+
+## roadmap
+
+- file arguments
+- `-i`, `--in-place` option
+- `-f`, `--format` option: canonicalize (equivalent to lowercase + uppercase)
+- cleanup text teansform logic (should we use the ungetc pattern more?)
