@@ -139,7 +139,7 @@ test_case_full "Lone ¤ (unterminated span -> warning)" \
     "START_¤UNFINISHED" \
     "start_UNFINISHED" \
     "START¤_UNFINISHED¤" \
-    'casectl: Found an unterminated literal span starting from the last ¤ in input. Did you forget to escape it?'
+    'casectl: warning: found an unterminated literal span starting from the last ¤ in input. Did you forget to escape it?'
 
 test_case_canonical "weof" \
     "_" \

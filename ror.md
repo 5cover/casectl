@@ -74,6 +74,28 @@ flowchart LR
 0@{shape: f-circ} --> 1((\*)) --> 1
 ```
 
+## Replace 'Sam' by 'Marie'
+
+```mermaid
+---
+config:
+  theme: mc
+  look: classic
+---
+flowchart
+start@{shape: f-circ} --- main((&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;))
+
+%% Other characters
+main --> default((\*)) --- main
+
+%% Happy path
+main --> s@{shape: text} --> a@{shape: text} --> m@{shape: text} --- marie_M((M)) --- marie_a((a)) --- marie_r((r)) --- marie_i((i)) --- marie_e((e)) --- main
+
+%% Fallbacks
+s --- main
+a --- main
+```
+
 ## CASECTL diagrams
 
 ### Lowercase

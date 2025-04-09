@@ -9,13 +9,15 @@ Reads from standard input, writes to standard output.
 
 Supports Unicode.
 
-## Arguments
+## Options
 
 casectl takes a single argument that determines the transformation to apply.
 
-Argument|
-`L`, `l`|Lowercase input
-`U`, `u`|Uppercase input
+Option|Description
+-|-
+`-l, --lower`|lowercase input
+`-u, --upper`|uppercase input
+`-i[SUFFIX], --in-place[=SUFFIX]`|edit files in place (makes backup if SUFFIX supplied)
 
 ## 🔤 `casectl` Escaping Rules Summary
 
@@ -77,3 +79,14 @@ FETCH¤_URL_WITH_PARAM_¤AND__LOG -> fetch_URL_WITH_PARAM_and_log
 - file arguments
 - `-i`, `--in-place` option
 - `-f`, `--format` option: canonicalize (equivalent to lowercase + uppercase)
+
+## changelog
+
+### 1.0.1
+
+- file arguments
+- in-place transformation
+
+### 1.0.0
+
+initial release

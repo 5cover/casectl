@@ -3,33 +3,50 @@
 casectl \- encode/decode ALLCAPS source files with case-preserving escapes
 .SH SYNOPSIS
 .B casectl
-[\-\-lower|\-\-upper]
+[\-\-lower|\-\-upper] [\-\-in\-place]
+.RI [ FILE .\|.\|.]
 .SH DESCRIPTION
 .B casectl
 is a stream-based encoder and decoder for ALLCAPS source files, designed to allow uppercase programming with lowercase repositories.
 
-It reads from standard input and writes to standard output. Warnings (such as invalid escapes or unterminated spans) are sent to standard error.
+.B casectl
+reads from each
+.IR FILE .
+A
+.I FILE
+of
+.RB "\*(lq" \- "\*(rq"
+stands for standard input.
+If no
+.I FILE
+is given, standard input is read.
+
+Output is sent to standard output. Warnings (such as invalid escapes or unterminated spans) are sent to standard error.
 
 .SH DEFAULT BEHAVIOR
-If no arguments are provided, casectl defaults to encode mode (--lower) when input is provided via standard input. If invoked interactively without piped input, it prints a usage summary to standard error.
+if no arguments are provided, casectl defaults to encode mode (--lower) when input is provided via standard input. If invoked interactively without piped input, it prints a usage summary to standard error.
 
 .SH OPTIONS
 .TP
 .B \-l, \-\-lower
-Encode mode: transforms an ALLCAPS source file into lowercase form, using escape rules to preserve intended casing.
+encode mode: transforms an ALLCAPS source file into lowercase form, using escape rules to preserve intended casing.
 
 .TP
 .B \-u, \-\-upper
-Decode mode: transforms a previously encoded lowercase file back to its ALLCAPS form.
-A canonical representation is used : lone uppercase letters are escaped by an underscore, while spans of multiple uppercase letters are escaped as literal spans.
+decode mode: transforms a previously encoded lowercase file back to its ALLCAPS form.
+A canonical representation is used: lone uppercase letters are escaped by an underscore, while spans of multiple uppercase letters are escaped as literal spans.
+
+.TP
+.B \-i[SUFFIX], \-\-in\-place[=SUFFIX]
+edit files in place (makes backup if SUFFIX supplied)
 
 .TP
 .B \-h, \-\-help
-Show help message and exit.
+display help and exit
 
 .TP
 .B \-\-version
-Show program version and exit.
+output version information and exit
 
 .SH ESCAPING RULES
 .TP
@@ -52,6 +69,10 @@ Success
 .TP
 1
 Syntax warning (e.g. unmatched escape sequence)
+
+.TP
+2
+An error occured (e.g. input file unreadable)
 
 .SH EXAMPLES
 .TP
